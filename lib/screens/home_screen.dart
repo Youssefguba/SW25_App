@@ -1,8 +1,8 @@
+import 'package:ecommerce_app_sw25/models/category_model.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class HomeScreen extends StatelessWidget {
-
   List<String> listOfImages = [
     'assets/images/promotion_image.png',
     'assets/images/promotion_image.png',
@@ -10,20 +10,23 @@ class HomeScreen extends StatelessWidget {
     'assets/images/promotion_image.png',
   ];
 
-  List listOfCategory = [
-    {'icon': "assets/images/shirt.png", 'text':"Man Shirt"},
-    {'icon': "assets/images/shirt.png", 'text':"Dress"},
-    {'icon': "assets/images/shirt.png", 'text':"Man Work Equipment"},
-    {'icon': "assets/images/shirt.png", 'text':"Man Work Equipment"},
-    {'icon': "assets/images/shirt.png", 'text':"Man Equipment"},
-    {'icon': "assets/images/shirt.png", 'text':"Woman Bag"},
-    {'icon': "assets/images/shirt.png", 'text':"Man Shoes"},
+  List<CategoryModel> listOfCategories = [
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
+    CategoryModel(image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
   ];
-
 
   @override
   Widget build(BuildContext context) {
-    print(listOfCategory[2]);
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -53,13 +56,11 @@ class HomeScreen extends StatelessWidget {
 
             // Slider
             CarouselSlider(
-              options: CarouselOptions(height: 200.0),
-              items: <String>[
-                'assets/images/promotion_image.png',
-                'assets/images/promotion_image.png',
-                'assets/images/promotion_image.png',
-                'assets/images/promotion_image.png',
-              ].map((i) {
+              options: CarouselOptions(
+                height: 200.0,
+                autoPlay: true,
+              ),
+              items: listOfImages.map((i) {
                 return Builder(
                   builder: (BuildContext context) {
                     return Container(
@@ -81,32 +82,53 @@ class HomeScreen extends StatelessWidget {
             Container(
               height: 100,
               child: ListView.builder(
-                  itemCount: listOfCategory.length,
-                  scrollDirection: Axis.horizontal,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
+                scrollDirection: Axis.horizontal,
+                itemCount: listOfCategories.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
                       children: [
-                        Image.asset(listOfCategory[index]['icon']),
-                        Text(listOfCategory[index]['text']),
+                        CircleAvatar(
+                          child: Image.asset(listOfCategories[index].image),
+                          backgroundColor: listOfCategories[index].inStock
+                              ? Colors.orange
+                              : Colors.red,
+                        ),
+                        Text(listOfCategories[index].title),
                       ],
-                      ),
-                    );
-                  }),
+                    ),
+                  );
+                },
+              ),
             ),
 
-            // Title of Flash Sale
-            Row(),
-
-            // List of Flash Sale
-            // ListView(),
-
-            // Offers
-            Container(),
-
-            // Grid of Products
-            Container(),
+            GridView.builder(
+              itemCount: listOfCategories.length,
+              shrinkWrap: true,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8),
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        child: Image.asset(listOfCategories[index].image),
+                        backgroundColor: listOfCategories[index].inStock
+                            ? Colors.orange
+                            : Colors.red,
+                      ),
+                      Text(listOfCategories[index].title),
+                    ],
+                  ),
+                );
+              },
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                mainAxisSpacing: 80,
+                crossAxisSpacing: 30,
+                childAspectRatio: 1,
+              ),
+            ),
           ],
         ),
       ),
