@@ -40,6 +40,11 @@ class MainScreen extends StatelessWidget {
         image: "assets/images/shirt.png", title: "Man Cloths", inStock: true),
   ];
 
+  List<Color> listOfColors = [
+    Colors.red,
+    Colors.blue,
+  ];
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
