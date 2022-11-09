@@ -106,8 +106,10 @@ class _RegisterPageState extends State<RegisterPage> {
       });
 
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-        return HomeScreen();
+        return LoginPage();
       }));
+
+      print(response);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
