@@ -1,11 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ecommerce_app_sw25/models/category_model.dart';
+import 'package:ecommerce_app_sw25/models/category_repo_model.dart';
+import 'package:ecommerce_app_sw25/repository/category_repo.dart';
 import 'package:flutter/material.dart';
 
 import 'favourite_screen.dart';
 
 class MainScreen extends StatelessWidget {
-
   List<String> listOfImages = [
     'assets/images/promotion_image.png',
     'assets/images/promotion_image.png',
@@ -109,28 +110,42 @@ class MainScreen extends StatelessWidget {
           SizedBox(height: 20),
 
           // List of Categories
-          Container(
-            height: 100,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: listOfCategories.length,
-              itemBuilder: (context, index) {
+          FutureBuilder<List<CategoryRepoModel>>(
+            future: CategoryRepo().getAllCategories(),
+            builder: (context, snapshot) {
+              final categoryList = snapshot.data!;
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return Container(
-                  padding: EdgeInsets.symmetric(horizontal: 8),
-                  child: Column(
-                    children: [
-                      CircleAvatar(
-                        child: Image.asset(listOfCategories[index].image),
-                        backgroundColor: listOfCategories[index].inStock
-                            ? Colors.orange
-                            : Colors.red,
-                      ),
-                      Text(listOfCategories[index].title),
-                    ],
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()));
+              }
+
+              if(snapshot.connectionState == ConnectionState.done) {
+                return Container(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categoryList.length,
+                    itemBuilder: (context, index) {
+                      return Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: Column(
+                          children: [
+                            CircleAvatar(
+                              child: Image.network(categoryList[index].image),
+                            ),
+                            Text(categoryList[index].name),
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 );
-              },
-            ),
+              }
+
+              return Text('Try Again Later!');
+            },
           ),
 
           GridView.builder(
