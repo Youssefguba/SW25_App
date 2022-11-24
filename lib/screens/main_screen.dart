@@ -1,10 +1,15 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ecommerce_app_sw25/models/category_model.dart';
 import 'package:ecommerce_app_sw25/models/category_repo_model.dart';
+import 'package:ecommerce_app_sw25/models/product_model.dart';
 import 'package:ecommerce_app_sw25/repository/category_repo.dart';
 import 'package:flutter/material.dart';
 
+import '../repository/product_repository.dart';
 import 'favourite_screen.dart';
+
+// TODO Font family
+// TODO Colors File
 
 class MainScreen extends StatelessWidget {
   List<String> listOfImages = [
@@ -110,70 +115,127 @@ class MainScreen extends StatelessWidget {
           SizedBox(height: 20),
 
           // List of Categories
-          FutureBuilder<List<CategoryRepoModel>>(
-            future: CategoryRepo().getAllCategories(),
-            builder: (context, snapshot) {
-              final categoryList = snapshot.data!;
+          // FutureBuilder<List<CategoryRepoModel>>(
+          //   future: CategoryRepo().getAllCategories(),
+          //   builder: (context, snapshot) {
+          //     final categoryList = snapshot.data!;
+          //
+          //     if (snapshot.connectionState == ConnectionState.waiting) {
+          //       return Container(
+          //           height: 100,
+          //           child: Center(child: CircularProgressIndicator()));
+          //     }
+          //
+          //     if (snapshot.connectionState == ConnectionState.done) {
+          //       return Container(
+          //         height: 100,
+          //         child: ListView.builder(
+          //           scrollDirection: Axis.horizontal,
+          //           itemCount: categoryList.length,
+          //           itemBuilder: (context, index) {
+          //             return Container(
+          //               padding: EdgeInsets.symmetric(horizontal: 8),
+          //               child: Column(
+          //                 children: [
+          //                   CircleAvatar(
+          //                     child: Image.network(categoryList[index].image),
+          //                   ),
+          //                   Text(categoryList[index].name),
+          //                 ],
+          //               ),
+          //             );
+          //           },
+          //         ),
+          //       );
+          //     }
+          //
+          //     return Text('Try Again Later!');
+          //   },
+          // ),
 
+          FutureBuilder<List<Product>>(
+            future: ProductRepository().getAllProducts(),
+            builder: (context, snapshot) {
+              final listOfProducts = snapshot.data;
+
+              // enum - enumeration
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container(
-                    height: 100,
-                    child: Center(child: CircularProgressIndicator()));
+                return Center(
+                  child: Container(
+                    height: 50,
+                    child: CircularProgressIndicator(),
+                  ),
+                );
               }
 
-              if(snapshot.connectionState == ConnectionState.done) {
-                return Container(
-                  height: 100,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: categoryList.length,
-                    itemBuilder: (context, index) {
-                      return Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Column(
-                          children: [
-                            CircleAvatar(
-                              child: Image.network(categoryList[index].image),
+              if (snapshot.connectionState == ConnectionState.done) {
+                return GridView.builder(
+                  itemCount: listOfProducts!.length,
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final priceAfterDiscount = listOfProducts[index].price -
+                        (listOfProducts[index].price *
+                            (listOfProducts[index].discountPercentage / 100));
+
+                    return Container(
+                      margin: EdgeInsets.symmetric(horizontal: 12),
+                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey, width: 1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.network(
+                            listOfProducts[index].thumbnail,
+                            height: 150,
+                            width: 250,
+                          ),
+                          Text(
+                            listOfProducts[index].title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Color(0xff40BFFF),
+                              fontWeight: FontWeight.bold,
                             ),
-                            Text(categoryList[index].name),
-                          ],
-                        ),
-                      );
-                    },
+                          ),
+
+                          // Rating Bar
+                          SizedBox(height: 10),
+                          Text("\$ ${priceAfterDiscount.ceil().toString()}"),
+
+                          Row(
+                            children: [
+                              Text('\$ ${listOfProducts[index].price}'),
+                              SizedBox(width: 8),
+                              Text(
+                                '${listOfProducts[index].discountPercentage}% Off',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 80,
+                    crossAxisSpacing: 30,
+                    childAspectRatio: 0.7,
                   ),
                 );
               }
 
               return Text('Try Again Later!');
             },
-          ),
-
-          GridView.builder(
-            itemCount: listOfCategories.length,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              return Container(
-                padding: EdgeInsets.symmetric(horizontal: 8),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      child: Image.asset(listOfCategories[index].image),
-                      backgroundColor: listOfCategories[index].inStock
-                          ? Colors.orange
-                          : Colors.red,
-                    ),
-                    Text(listOfCategories[index].title),
-                  ],
-                ),
-              );
-            },
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              mainAxisSpacing: 80,
-              crossAxisSpacing: 30,
-              childAspectRatio: 1,
-            ),
           ),
         ],
       ),
