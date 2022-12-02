@@ -6,6 +6,7 @@ import 'package:ecommerce_app_sw25/repository/category_repo.dart';
 import 'package:flutter/material.dart';
 
 import '../repository/product_repository.dart';
+import 'category_products_screen.dart';
 import 'favourite_screen.dart';
 
 // TODO Font family
@@ -115,43 +116,55 @@ class MainScreen extends StatelessWidget {
           SizedBox(height: 20),
 
           // List of Categories
-          // FutureBuilder<List<CategoryRepoModel>>(
-          //   future: CategoryRepo().getAllCategories(),
-          //   builder: (context, snapshot) {
-          //     final categoryList = snapshot.data!;
-          //
-          //     if (snapshot.connectionState == ConnectionState.waiting) {
-          //       return Container(
-          //           height: 100,
-          //           child: Center(child: CircularProgressIndicator()));
-          //     }
-          //
-          //     if (snapshot.connectionState == ConnectionState.done) {
-          //       return Container(
-          //         height: 100,
-          //         child: ListView.builder(
-          //           scrollDirection: Axis.horizontal,
-          //           itemCount: categoryList.length,
-          //           itemBuilder: (context, index) {
-          //             return Container(
-          //               padding: EdgeInsets.symmetric(horizontal: 8),
-          //               child: Column(
-          //                 children: [
-          //                   CircleAvatar(
-          //                     child: Image.network(categoryList[index].image),
-          //                   ),
-          //                   Text(categoryList[index].name),
-          //                 ],
-          //               ),
-          //             );
-          //           },
-          //         ),
-          //       );
-          //     }
-          //
-          //     return Text('Try Again Later!');
-          //   },
-          // ),
+          FutureBuilder<List<CategoryRepoModel>>(
+            future: CategoryRepo().getAllCategories(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Container(
+                    height: 100,
+                    child: Center(child: CircularProgressIndicator()));
+              }
+
+              if (snapshot.connectionState == ConnectionState.done) {
+                final categoryList = snapshot.data!;
+
+                return Container(
+                  height: 100,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categoryList.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) {
+                              return CategoryProductScreen(
+                                  title: categoryList[index].name);
+                            }),
+                          );
+                        },
+                        child: Container(
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              CircleAvatar(
+                                radius: 30,
+                                backgroundImage:
+                                    NetworkImage(categoryList[index].image),
+                              ),
+                              Text(categoryList[index].name),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }
+
+              return Text('Try Again Later!');
+            },
+          ),
 
           FutureBuilder<List<Product>>(
             future: ProductRepository().getAllProducts(),

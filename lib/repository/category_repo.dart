@@ -5,8 +5,9 @@ class CategoryRepo {
 
   Future<List<CategoryRepoModel>> getAllCategories() async {
     final response =
-        await Dio().get('https://api.escuelajs.co/api/v1/categories/');
+        await Dio().get('https://mocki.io/v1/e5775744-06ba-4306-b6f6-93055de3c2d5');
 
+    print('response data ${response.data}');
     final List<CategoryRepoModel> listOfCategories = List<CategoryRepoModel>.from(
       response.data.map(
         (element) {
@@ -19,6 +20,8 @@ class CategoryRepo {
         },
       ),
     );
+    print('list of categories ${listOfCategories}');
+
 
     return listOfCategories;
   }
