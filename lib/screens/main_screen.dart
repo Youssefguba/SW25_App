@@ -1,9 +1,12 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:ecommerce_app_sw25/cubits/category_cubit/category_cubit.dart';
 import 'package:ecommerce_app_sw25/models/category_model.dart';
 import 'package:ecommerce_app_sw25/models/category_repo_model.dart';
 import 'package:ecommerce_app_sw25/models/product_model.dart';
 import 'package:ecommerce_app_sw25/repository/category_repo.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../repository/product_repository.dart';
 import 'category_products_screen.dart';
@@ -12,7 +15,12 @@ import 'favourite_screen.dart';
 // TODO Font family
 // TODO Colors File
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
   List<String> listOfImages = [
     'assets/images/promotion_image.png',
     'assets/images/promotion_image.png',
@@ -51,6 +59,12 @@ class MainScreen extends StatelessWidget {
     Colors.red,
     Colors.blue,
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<CategoryCubit>().getAllCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,17 +130,16 @@ class MainScreen extends StatelessWidget {
           SizedBox(height: 20),
 
           // List of Categories
-          FutureBuilder<List<CategoryRepoModel>>(
-            future: CategoryRepo().getAllCategories(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Container(
-                    height: 100,
-                    child: Center(child: CircularProgressIndicator()));
-              }
+          BlocBuilder<CategoryCubit, CategoryState>(
+            builder: (context, state) {
 
-              if (snapshot.connectionState == ConnectionState.done) {
-                final categoryList = snapshot.data!;
+              if(state is LoadingCategory) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              if (state is GetCategoriesSuccess) {
+                final categoryList = state.categoryList;
 
                 return Container(
                   height: 100,
@@ -160,6 +173,10 @@ class MainScreen extends StatelessWidget {
                     },
                   ),
                 );
+              }
+
+              if(state is ErrorInCategory) {
+                return Text('No Internet Connection!');
               }
 
               return Text('Try Again Later!');
@@ -254,4 +271,7 @@ class MainScreen extends StatelessWidget {
       ),
     );
   }
+
+
+
 }
