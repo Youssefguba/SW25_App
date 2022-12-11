@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:ecommerce_app_sw25/cubits/category_cubit/category_cubit.dart';
+import 'package:ecommerce_app_sw25/cubits/product_cubit/product_cubit.dart';
 import 'package:ecommerce_app_sw25/models/category_model.dart';
 import 'package:ecommerce_app_sw25/models/category_repo_model.dart';
 import 'package:ecommerce_app_sw25/models/product_model.dart';
 import 'package:ecommerce_app_sw25/repository/category_repo.dart';
+import 'package:ecommerce_app_sw25/screens/single_product_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,8 +134,7 @@ class _MainScreenState extends State<MainScreen> {
           // List of Categories
           BlocBuilder<CategoryCubit, CategoryState>(
             builder: (context, state) {
-
-              if(state is LoadingCategory) {
+              if (state is LoadingCategory) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
@@ -175,7 +176,7 @@ class _MainScreenState extends State<MainScreen> {
                 );
               }
 
-              if(state is ErrorInCategory) {
+              if (state is ErrorInCategory) {
                 return Text('No Internet Connection!');
               }
 
@@ -208,50 +209,58 @@ class _MainScreenState extends State<MainScreen> {
                         (listOfProducts[index].price *
                             (listOfProducts[index].discountPercentage / 100));
 
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 12),
-                      padding: EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey, width: 1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.network(
-                            listOfProducts[index].thumbnail,
-                            height: 150,
-                            width: 250,
-                          ),
-                          Text(
-                            listOfProducts[index].title,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Color(0xff40BFFF),
-                              fontWeight: FontWeight.bold,
+                    return GestureDetector(
+                      onTap: () {
+                        final itemId = listOfProducts[index].id;
+                        context.read<ProductCubit>().getSingleProduct(itemId);
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => SingleProductScreen()));
+                      },
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 12),
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey, width: 1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Image.network(
+                              listOfProducts[index].thumbnail,
+                              height: 150,
+                              width: 250,
                             ),
-                          ),
-
-                          // Rating Bar
-                          SizedBox(height: 10),
-                          Text("\$ ${priceAfterDiscount.ceil().toString()}"),
-
-                          Row(
-                            children: [
-                              Text('\$ ${listOfProducts[index].price}'),
-                              SizedBox(width: 8),
-                              Text(
-                                '${listOfProducts[index].discountPercentage}% Off',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                            Text(
+                              listOfProducts[index].title,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Color(0xff40BFFF),
+                                fontWeight: FontWeight.bold,
                               ),
-                            ],
-                          ),
-                        ],
+                            ),
+
+                            // Rating Bar
+                            SizedBox(height: 10),
+                            Text("\$ ${priceAfterDiscount.ceil().toString()}"),
+
+                            Row(
+                              children: [
+                                Text('\$ ${listOfProducts[index].price}'),
+                                SizedBox(width: 8),
+                                Text(
+                                  '${listOfProducts[index].discountPercentage}% Off',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -271,7 +280,4 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-
-
 }

@@ -1,4 +1,5 @@
 import 'package:ecommerce_app_sw25/cubits/category_cubit/category_cubit.dart';
+import 'package:ecommerce_app_sw25/cubits/product_cubit/product_cubit.dart';
 import 'package:ecommerce_app_sw25/screens/login_screen.dart';
 import 'package:ecommerce_app_sw25/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ void main() {
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => CategoryCubit()),
+        BlocProvider(create: (context) => ProductCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

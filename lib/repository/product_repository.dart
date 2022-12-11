@@ -17,4 +17,11 @@ class ProductRepository {
 
     return listOfProductModel;
   }
+
+  Future<Product> getSingleProduct(int productId) async {
+    final response = await Dio().get('https://dummyjson.com/products/$productId');
+    final product = Product.fromJson(response.data);
+    return product;
+
+  }
 }
