@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:ecommerce_app_sw25/screens/home_screen.dart';
 import 'package:ecommerce_app_sw25/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:image_picker/image_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   @override
@@ -17,6 +21,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final GlobalKey<FormState> formKey = GlobalKey();
 
+  XFile? image;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,6 +32,17 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              GestureDetector(
+                onTap: () {
+                  _handleUploadImage();
+                },
+                child: CircleAvatar(
+                  radius: 60,
+                  backgroundImage: image == null
+                      ? NetworkImage('')
+                      : Image.file(File(image!.path)).image,
+                ),
+              ),
               Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 child: TextFormField(
@@ -98,7 +115,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void register() async {
     try {
-      var response = await Dio().post('https://api.escuelajs.co/api/v1/users/', data: {
+      var response =
+          await Dio().post('https://api.escuelajs.co/api/v1/users/', data: {
         "name": nameController.text,
         "email": emailController.text,
         "password": passwordController.text,
@@ -108,6 +126,11 @@ class _RegisterPageState extends State<RegisterPage> {
       Navigator.of(context).push(MaterialPageRoute(builder: (context) {
         return LoginPage();
       }));
+
+      SharedPreferences _prefs = await SharedPreferences.getInstance();
+
+      _prefs.setString('name', nameController.text); // save name
+      _prefs.setString('email', emailController.text); // save name
 
       print(response);
     } catch (e) {
@@ -119,5 +142,11 @@ class _RegisterPageState extends State<RegisterPage> {
       );
       print(e);
     }
+  }
+
+  void _handleUploadImage() async {
+    final ImagePicker _picker = ImagePicker();
+    image = await _picker.pickImage(source: ImageSource.camera);
+    setState(() {});
   }
 }
