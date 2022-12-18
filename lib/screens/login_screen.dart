@@ -139,18 +139,18 @@ class LoginPage extends StatelessWidget {
 
   void login(BuildContext context) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-
-      final response = await Dio().post(
-        'https://api.escuelajs.co/api/v1/auth/login',
-        data: {
-          "email": emailController.text,
-          "password": passwordController.text,
-        },
-      );
-
-      final accessToken = response.data['access_token'];
-      await prefs.setString('user_access_token', accessToken);
+      // final prefs = await SharedPreferences.getInstance();
+      //
+      // final response = await Dio().post(
+      //   'https://api.escuelajs.co/api/v1/auth/login',
+      //   data: {
+      //     "email": emailController.text,
+      //     "password": passwordController.text,
+      //   },
+      // );
+      //
+      // final accessToken = response.data['access_token'];
+      // await prefs.setString('user_access_token', accessToken);
 
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) {

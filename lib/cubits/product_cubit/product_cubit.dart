@@ -9,13 +9,27 @@ part 'product_state.dart';
 class ProductCubit extends Cubit<ProductState> {
   ProductCubit() : super(ProductInitial());
 
+  Product? myProduct;
+
   void getSingleProduct(int productId) async {
     try {
       emit(LoadingProduct());
       final product = await ProductRepository().getSingleProduct(productId);
+      myProduct = product;
       emit(GetProductSuccess(product));
     } on Exception catch (e) {
       emit(GetProductFailed());
     }
   }
+
+  // checkQuantityOfProduct(int productId) async {
+  //   try {
+  //     emit(LoadingProduct());
+  //     final product = await ProductRepository().getSingleProduct(productId);
+  //
+  //     emit(QuantitySucces(product));
+  //   } on Exception catch (e) {
+  //     emit(GetProductFailed());
+  //   }
+  // }
 }
